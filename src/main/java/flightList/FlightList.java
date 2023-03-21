@@ -180,8 +180,41 @@ public class FlightList {
 	 */
 	public List<FlightNode> successors(FlightKey key) {
 		List<FlightNode> arr = new ArrayList<>();
-		// FILL IN CODE
+		FlightNode curr = head;
+		int height = this.height;
 
+		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
+			FlightKey nextKey = curr.getNext().getKey();
+
+			if (nextKey.compareTo(key) < 0) {
+				curr = curr.getNext();
+				height--;
+				continue;
+			}
+
+			if (nextKey.compareTo(key) > 0) {
+				curr = curr.getDown();
+				continue;
+			}
+
+			if (nextKey.compareTo(key) == 0) {
+				curr = curr.getNext();
+				while (height != 1) {
+					curr = curr.getDown();
+					height--;
+				}
+				break;
+			}
+
+			if (nextKey.compareTo(key) > 0) {
+				break;
+			}
+		}
+
+		while (key.compareTo(curr.getNext().getKey()) == 0 && curr.getNext() != null) {
+			arr.add(curr.getNext());
+			curr = curr.getNext();
+		}
 
 		return arr;
 	}
