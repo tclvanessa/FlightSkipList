@@ -180,7 +180,7 @@ public class FlightList {
 	 */
 	public List<FlightNode> successors(FlightKey key) {
 		List<FlightNode> arr = new ArrayList<>();
-		FlightNode curr = head;
+		FlightNode curr = this.head;
 		int height = this.height;
 
 		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
@@ -188,12 +188,12 @@ public class FlightList {
 
 			if (nextKey.compareTo(key) < 0) {
 				curr = curr.getNext();
-				height--;
 				continue;
 			}
 
-			if (nextKey.compareTo(key) > 0) {
+			if (nextKey.compareTo(key) > 0 && height != 1) {
 				curr = curr.getDown();
+				height--;
 				continue;
 			}
 
@@ -206,15 +206,16 @@ public class FlightList {
 				break;
 			}
 
-			if (nextKey.compareTo(key) > 0) {
+			if (nextKey.compareTo(key) > 0 && height == 1) {
 				break;
 			}
 		}
 
-		while (key.compareTo(curr.getNext().getKey()) == 0 && curr.getNext() != null) {
+		while (curr.getNext().getKey().matchSuccessor(key) == true && curr.getNext() != null) {
 			arr.add(curr.getNext());
 			curr = curr.getNext();
 		}
+		System.out.println(arr.toString());
 
 		return arr;
 	}
@@ -268,16 +269,20 @@ public class FlightList {
 	 */
 	public void print(String filename) {
 		// FILL IN CODE
-		FlightNode node = head;
 		try (PrintWriter pw = new PrintWriter(filename)) {
-			while (node.getDown() != null) {
-				pw.print(node.getKey());
-				if (node.getNext() == null) {
-					pw.println();
-					node = head.getDown();
+			FlightNode curr = head;
+			int levels = height;
+			while (levels > 0) {
+				FlightNode node = curr;
+
+				while (curr != null && curr.getNext() != null & curr.getNext().getKey().compareTo(tail.getKey()) != 0) {
+					pw.print(curr.getNext().getKey() + ", ");
+					curr = curr.getNext();
 				}
-				pw.print(", ");
-				node = node.getNext();
+				pw.println();
+				curr = node;
+				curr = curr.getDown();
+				levels--;
 			}
 		} catch (IOException e) {
 			System.out.println("No file found.");
@@ -305,6 +310,14 @@ public class FlightList {
 
 	public static void main(String[] args) {
 		FlightList list = new FlightList(filename);
-		System.out.println(list);
+		List<FlightKey> flightsToTestSuccessors = new ArrayList<FlightKey>();
+		List<FlightKey> testedFlights = flightsToTestSuccessors;
+
+		for (int i =0 ; i < testedFlights.size(); i++) {
+			FlightKey key = testedFlights.get(i);
+			List<FlightNode> results;
+
+			results = list.successors(key);
+		}
 	}
 }

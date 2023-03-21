@@ -63,31 +63,36 @@ public class FlightKey implements Comparable<FlightKey> {
 		// if origins are equal, compare destinations
 		// if origins and destinations are equal, compare the dates
 		// if dates are equal, compare the time
-		if (this.getOrigin().compareTo(other.getOrigin()) < 0) {
-			return -1;
-		} else if (this.getOrigin().compareTo(other.getOrigin()) > 0) {
-			return this.getOrigin().compareTo(other.getOrigin());
-		} else {
-			if (this.getDest().compareTo(other.getDest()) < 0) {
-				return -1;
-			} else if (this.getDest().compareTo(other.getDest()) > 0) {
-				return this.getDest().compareTo(other.getDest());
-			} else {
-				if (this.getDate().compareTo(other.getDate()) < 0) {
-					return -1;
-				} else if (this.getDate().compareTo(other.getDate()) > 0) {
-					return this.getDate().compareTo(other.getDate());
-				} else {
-					if (this.getTime().compareTo(other.getTime()) < 0) {
-						return -1;
-					} else if (this.getTime().compareTo(other.getTime()) > 0) {
-						return this.getTime().compareTo(other.getTime());
-					} else {
-						return 0;
-					}
-				}
-			}
+
+		int info1 = this.origin.compareTo(other.origin);
+		int info2 = this.dest.compareTo(other.dest);
+		int info3 = this.date.compareTo(other.date);
+
+		if (info1 == 0 && info2 == 0 && info3 == 0) {
+			return this.time.compareTo(other.time);
 		}
+
+		if (info1 == 0 && info2 == 0) {
+			return info3;
+		}
+
+		if (info1 == 0) {
+			return info2;
+		}
+
+		return info1;
+	}
+
+	public boolean matchSuccessor(FlightKey other) {
+		int info1 = this.origin.compareTo(other.origin);
+		int info2 = this.dest.compareTo(other.dest);
+		int info3 = this.date.compareTo(other.date);
+		int info4 = this.getTime().compareTo(other.getTime());
+
+		if (info1 == 0 && info2 == 0 && info3 == 0 && info4 >= 0) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
