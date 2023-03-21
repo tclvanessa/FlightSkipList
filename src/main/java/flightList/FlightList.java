@@ -1,5 +1,8 @@
 package flightList;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,13 +19,29 @@ public class FlightList {
 	/**
 	 * Constructor.
 	 * Reads flight data from the file and inserts it into this skip list.
-	 * @param filename the name of he file
+	 * @param filename the name of the file
 	 */
 	public FlightList(String filename) {
 		// FILL IN CODE
 		// Read the file; for each line, create a flight key and a flight data
 		// and call the insert method to insert them into the skip list.
 
+		FlightKey minusInf = new FlightKey(min, min, min, min);
+		FlightKey posInf = new FlightKey(max, max, max, max);
+		head = new FlightNode(minusInf, null);
+		tail = new FlightNode(posInf, null);
+		height = 1;
+
+		try (FileReader f = new FileReader(filename)) {
+			BufferedReader br = new BufferedReader(f);
+			String line;
+
+			while ((line = br.readLine()) != null) {
+
+			}
+		} catch (IOException e) {
+			System.out.println("No file found.");
+		}
 	}
 
 	/**
@@ -34,8 +53,18 @@ public class FlightList {
 	 */
 	public boolean find(FlightKey key) {
 		// FILL IN CODE
+		FlightNode curr = head;
 
-		return false; // change
+		while (curr.getDown() != null) {
+			if (curr.getNext().getKey().compareTo(key) < 0) {
+				curr = curr.getNext();
+			} else if (curr.getNext().getKey().compareTo(key) > 0) {
+				curr = curr.getDown();
+			} else {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -90,7 +119,7 @@ public class FlightList {
 
 		// Insert each copy of the new node into the skip list
 		boolean success = false;
-		while (cur!= null && cur.getNext() !=null) {
+		while (cur != null && cur.getNext() !=null) {
 			if (key.compareTo(cur.getNext().getKey()) == 0) {
 				return false;
 			}

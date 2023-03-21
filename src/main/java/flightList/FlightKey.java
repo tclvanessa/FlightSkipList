@@ -63,8 +63,31 @@ public class FlightKey implements Comparable<FlightKey> {
 		// if origins are equal, compare destinations
 		// if origins and destinations are equal, compare the dates
 		// if dates are equal, compare the time
-
-		return 0; // change
+		if (this.getOrigin().compareTo(other.getOrigin()) < 0) {
+			return -1;
+		} else if (this.getOrigin().compareTo(other.getOrigin()) > 0) {
+			return this.getOrigin().compareTo(other.getOrigin());
+		} else {
+			if (this.getDest().compareTo(other.getDest()) < 0) {
+				return -1;
+			} else if (this.getDest().compareTo(other.getDest()) > 0) {
+				return this.getDest().compareTo(other.getDest());
+			} else {
+				if (this.getDate().compareTo(other.getDate()) < 0) {
+					return -1;
+				} else if (this.getDate().compareTo(other.getDate()) > 0) {
+					return this.getDate().compareTo(other.getDate());
+				} else {
+					if (this.getTime().compareTo(other.getTime()) < 0) {
+						return -1;
+					} else if (this.getTime().compareTo(other.getTime()) > 0) {
+						return this.getTime().compareTo(other.getTime());
+					} else {
+						return 0;
+					}
+				}
+			}
+		}
 	}
 
 	/**

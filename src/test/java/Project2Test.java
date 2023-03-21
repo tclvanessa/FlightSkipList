@@ -39,7 +39,7 @@ public class Project2Test {
                 }
             }
             catch (IOException e) {
-                Assert.fail("IOException occured while reading from the file: " + e);
+                Assert.fail("IOException occurred while reading from the file: " + e);
             }
 
         }
