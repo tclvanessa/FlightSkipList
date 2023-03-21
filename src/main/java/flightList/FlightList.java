@@ -1,8 +1,11 @@
 package flightList;
 
+import org.junit.Assert;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,10 +29,12 @@ public class FlightList {
 		// Read the file; for each line, create a flight key and a flight data
 		// and call the insert method to insert them into the skip list.
 
-		FlightKey minusInf = new FlightKey(min, min, min, min);
+		FlightKey negInf = new FlightKey(min, min, min, min);
 		FlightKey posInf = new FlightKey(max, max, max, max);
-		head = new FlightNode(minusInf, null);
+		head = new FlightNode(negInf, null);
 		tail = new FlightNode(posInf, null);
+		head.setNext(tail);
+		tail.setPrev(head);
 		height = 1;
 
 		try (FileReader f = new FileReader(filename)) {
@@ -37,7 +42,21 @@ public class FlightList {
 			String line;
 
 			while ((line = br.readLine()) != null) {
+				String[] arr = line.split(" ");
+				if (arr.length != 6) {
+					continue;
+				}
+				String origin = arr[0];
+				String dest = arr[1];
+				String date = arr[2];
+				String time = arr[3];
+				String flightNumber = arr[4];
+				double price = Double.parseDouble(arr[5]);
 
+				FlightKey key = new FlightKey(origin, dest, date, time);
+				FlightData data = new FlightData(flightNumber, price);
+
+				insert(key, data);
 			}
 		} catch (IOException e) {
 			System.out.println("No file found.");
@@ -47,7 +66,7 @@ public class FlightList {
 	/**
 	 * Returns true if the node with the given key exists in the skip list,
 	 * false otherwise. This method needs to be efficient.
-	 * 
+	 *
 	 * @param key flight key
 	 * @return true if the key is in the skip list, false otherwise
 	 */
@@ -55,13 +74,17 @@ public class FlightList {
 		// FILL IN CODE
 		FlightNode curr = head;
 
-		while (curr.getDown() != null) {
-			if (curr.getNext().getKey().compareTo(key) < 0) {
-				curr = curr.getNext();
-			} else if (curr.getNext().getKey().compareTo(key) > 0) {
-				curr = curr.getDown();
-			} else {
+		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
+			FlightKey nextKey = curr.getNext().getKey();
+
+			if (nextKey.compareTo(key) == 0) {
 				return true;
+			}
+
+			if (curr.getNext() == tail || nextKey.compareTo(key) > 0) {
+				curr = curr.getDown();
+			} else if (nextKey.compareTo(key) < 0) {
+				curr = curr.getNext();
 			}
 		}
 		return false;
@@ -119,7 +142,7 @@ public class FlightList {
 
 		// Insert each copy of the new node into the skip list
 		boolean success = false;
-		while (cur != null && cur.getNext() !=null) {
+		while (cur != null && cur.getNext() != null) {
 			if (key.compareTo(cur.getNext().getKey()) == 0) {
 				return false;
 			}
@@ -151,13 +174,14 @@ public class FlightList {
 	 * These are flights that have the same origin and destination,
 	 * but have a later time than the given key.
 	 * Refer to the project pdf for a detailed description of the method.
-	 * 
+	 *
 	 * @param key flight key
 	 * @return successors of the given key
 	 */
 	public List<FlightNode> successors(FlightKey key) {
 		List<FlightNode> arr = new ArrayList<>();
 		// FILL IN CODE
+
 
 		return arr;
 	}
@@ -167,7 +191,7 @@ public class FlightList {
 	 * (that corresponds to flights that have the same origin and destination but
 	 *  are earlier than the given flight).
 	 *  Refer to the project pdf for a detailed description of the method.
-	 * 
+	 *
 	 * @param key flight key
 	 * @return predecessors of the given key
 	 */
@@ -187,8 +211,20 @@ public class FlightList {
 	 */
 	public String toString() {
 		// FILL IN CODE
+		StringBuilder sb = new StringBuilder();
+		FlightNode node = head;
 
-		return ""; // don't forget to change it
+		while (node.getDown() != null) {
+			sb.append(node.getKey());
+			if (node.getNext() == null) {
+				sb.append(System.lineSeparator());
+				node = head.getDown();
+			}
+			sb.append(", ");
+			node = node.getNext();
+		}
+
+		return sb.toString();
 	}
 
 	/**
@@ -199,7 +235,20 @@ public class FlightList {
 	 */
 	public void print(String filename) {
 		// FILL IN CODE
-
+		FlightNode node = head;
+		try (PrintWriter pw = new PrintWriter(filename)) {
+			while (node.getDown() != null) {
+				pw.print(node.getKey());
+				if (node.getNext() == null) {
+					pw.println();
+					node = head.getDown();
+				}
+				pw.print(", ");
+				node = node.getNext();
+			}
+		} catch (IOException e) {
+			System.out.println("No file found.");
+		}
 	}
 
 	/**
@@ -217,5 +266,12 @@ public class FlightList {
 		// FILL IN CODE
 
 		return resFlights;
+	}
+
+	public static String filename = "flights";
+
+	public static void main(String[] args) {
+		FlightList list = new FlightList(filename);
+		System.out.println(list);
 	}
 }
