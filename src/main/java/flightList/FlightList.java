@@ -180,7 +180,7 @@ public class FlightList {
 	 */
 	public List<FlightNode> successors(FlightKey key) {
 		List<FlightNode> arr = new ArrayList<>();
-		FlightNode curr = this.head;
+		FlightNode curr = head;
 		int height = this.height;
 
 		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
@@ -215,7 +215,6 @@ public class FlightList {
 			arr.add(curr.getNext());
 			curr = curr.getNext();
 		}
-		System.out.println(arr.toString());
 
 		return arr;
 	}
@@ -231,7 +230,47 @@ public class FlightList {
 	 */
 	public List<FlightNode> predecessors(FlightKey key) {
 		List<FlightNode> arr = new ArrayList<>();
-		// FILL IN CODE
+		ArrayList<FlightNode> temp = new ArrayList<FlightNode>();
+		FlightNode curr = head;
+		int height = this.height;
+
+		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
+			FlightKey nextKey = curr.getNext().getKey();
+
+			if (nextKey.compareTo(key) < 0) {
+				curr = curr.getNext();
+				continue;
+			}
+
+			if (nextKey.compareTo(key) > 0 && height != 1) {
+				curr = curr.getDown();
+				height--;
+				continue;
+			}
+
+			if (nextKey.compareTo(key) == 0) {
+				curr = curr.getNext();
+				while (height != 1) {
+					curr = curr.getDown();
+					height--;
+				}
+				break;
+			}
+
+			if (nextKey.compareTo(key) > 0 && height == 1) {
+				curr = curr.getNext();
+				break;
+			}
+		}
+
+		while (curr.getPrev().getKey().matchPredecessor(key) == true && curr.getPrev() != null) {
+			temp.add(curr.getPrev());
+			curr = curr.getPrev();
+		}
+
+		for (int i = temp.size() - 1; i >= 0; i--) {
+			arr.add(temp.get(i));
+		}
 
 		return arr;
 	}

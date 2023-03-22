@@ -83,6 +83,12 @@ public class FlightKey implements Comparable<FlightKey> {
 		return info1;
 	}
 
+	/**
+	 * Helper Method for Successor Method
+	 * Compares a given flight key with the one given as a parameter.
+	 * @param other
+	 * @return true or false
+	 */
 	public boolean matchSuccessor(FlightKey other) {
 		int info1 = this.origin.compareTo(other.origin);
 		int info2 = this.dest.compareTo(other.dest);
@@ -90,6 +96,24 @@ public class FlightKey implements Comparable<FlightKey> {
 		int info4 = this.getTime().compareTo(other.getTime());
 
 		if (info1 == 0 && info2 == 0 && info3 == 0 && info4 >= 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Helper Method for Predecessor Method
+	 * Compares a given flight key with the one given as a parameter.
+	 * @param other
+	 * @return true or false
+	 */
+	public boolean matchPredecessor(FlightKey other) {
+		int info1 = this.origin.compareTo(other.origin);
+		int info2 = this.dest.compareTo(other.dest);
+		int info3 = this.date.compareTo(other.date);
+		int info4 = this.getTime().compareTo(other.getTime());
+
+		if (info1 == 0 && info2 == 0 && info3 == 0 && info4 <= 0) {
 			return true;
 		}
 		return false;
