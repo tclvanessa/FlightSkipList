@@ -340,23 +340,36 @@ public class FlightList {
 	 */
 	public List<FlightNode> findFlights(FlightKey key, int timeFrame) {
 		List<FlightNode> resFlights = new ArrayList<>();
-		// FILL IN CODE
+		List<FlightNode> pre = predecessors(key);
+		List<FlightNode> suc = successors(key);
+		int hour = hour(key.getTime());
+		int lowerTimeFrame = hour - timeFrame;
+		int upperTimeFrame = hour + timeFrame;
+		int flightHour;
+
+		for (int i = 0; i < pre.size(); i++) {
+			FlightNode currP = pre.get(i);
+			flightHour = hour(currP.getKey().getTime());
+			if (flightHour >= lowerTimeFrame) {
+				resFlights.add(currP);
+			}
+		}
+
+		for (int j = 0; j < suc.size(); j++) {
+			FlightNode currS = suc.get(j);
+			flightHour = hour(currS.getKey().getTime());
+			if (flightHour <= upperTimeFrame) {
+				resFlights.add(currS);
+			}
+		}
 
 		return resFlights;
 	}
 
-	public static String filename = "flights";
+	private static int hour(String time) {
+		String[] h = time.split(":");
+		int hour = Integer.parseInt(h[0]);
 
-	public static void main(String[] args) {
-		FlightList list = new FlightList(filename);
-		List<FlightKey> flightsToTestSuccessors = new ArrayList<FlightKey>();
-		List<FlightKey> testedFlights = flightsToTestSuccessors;
-
-		for (int i =0 ; i < testedFlights.size(); i++) {
-			FlightKey key = testedFlights.get(i);
-			List<FlightNode> results;
-
-			results = list.successors(key);
-		}
+		return hour;
 	}
 }
