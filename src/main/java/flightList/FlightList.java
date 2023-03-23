@@ -355,6 +355,10 @@ public class FlightList {
 			}
 		}
 
+		if (find(key) == true) {
+			resFlights.add(findFlight(key));
+		}
+
 		for (int j = 0; j < suc.size(); j++) {
 			FlightNode currS = suc.get(j);
 			flightHour = hour(currS.getKey().getTime());
@@ -366,6 +370,35 @@ public class FlightList {
 		return resFlights;
 	}
 
+	/**
+	 * Returns the node of the flight from the given key.
+	 * @param key flight key
+	 * @return the node of the flight or null if the flight does not exist.
+	 */
+	private FlightNode findFlight(FlightKey key) {
+		FlightNode curr = head;
+
+		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
+			FlightKey nextKey = curr.getNext().getKey();
+
+			if (nextKey.compareTo(key) == 0) {
+				return curr.getNext();
+			}
+
+			if (curr.getNext() == tail || nextKey.compareTo(key) > 0) {
+				curr = curr.getDown();
+			} else if (nextKey.compareTo(key) < 0) {
+				curr = curr.getNext();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the hour of the given time
+	 * @param time
+	 * @return the hour of the given time
+	 */
 	private static int hour(String time) {
 		String[] h = time.split(":");
 		int hour = Integer.parseInt(h[0]);
