@@ -67,38 +67,25 @@ public class FlightKey implements Comparable<FlightKey> {
 		int info1 = this.origin.compareTo(other.origin);
 		int info2 = this.dest.compareTo(other.dest);
 		int info3 = this.date.compareTo(other.date);
+		int info4 = this.time.compareTo(other.time);
 
+		// If origins, destinations, and dates are equal, compare time
 		if (info1 == 0 && info2 == 0 && info3 == 0) {
-			return this.time.compareTo(other.time);
+			return info4;
 		}
 
+		// If origin and destination are equal, compare date
 		if (info1 == 0 && info2 == 0) {
 			return info3;
 		}
 
+		// If origin equal, compare destination
 		if (info1 == 0) {
 			return info2;
 		}
 
+		// In the end, compare origin
 		return info1;
-	}
-
-	/**
-	 * Helper Method for Successor Method
-	 * Compares a given flight key with the one given as a parameter.
-	 * @param other
-	 * @return true or false
-	 */
-	public boolean matchSuccessor(FlightKey other) {
-		int info1 = this.origin.compareTo(other.origin);
-		int info2 = this.dest.compareTo(other.dest);
-		int info3 = this.date.compareTo(other.date);
-		int info4 = this.getTime().compareTo(other.getTime());
-
-		if (info1 == 0 && info2 == 0 && info3 == 0 && info4 >= 0) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -113,7 +100,27 @@ public class FlightKey implements Comparable<FlightKey> {
 		int info3 = this.date.compareTo(other.date);
 		int info4 = this.getTime().compareTo(other.getTime());
 
+		// If origins, destinations, and dates are equal, and time is less than given time
 		if (info1 == 0 && info2 == 0 && info3 == 0 && info4 <= 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Helper Method for Successor Method
+	 * Compares a given flight key with the one given as a parameter.
+	 * @param other
+	 * @return true or false
+	 */
+	public boolean matchSuccessor(FlightKey other) {
+		int info1 = this.origin.compareTo(other.origin);
+		int info2 = this.dest.compareTo(other.dest);
+		int info3 = this.date.compareTo(other.date);
+		int info4 = this.getTime().compareTo(other.getTime());
+
+		// If origins, destinations, and dates are equal, and time is greater than given time
+		if (info1 == 0 && info2 == 0 && info3 == 0 && info4 >= 0) {
 			return true;
 		}
 		return false;
@@ -125,7 +132,7 @@ public class FlightKey implements Comparable<FlightKey> {
 	 */
 	public String toString() {
 		if (getOrigin() != null)
-			return "(" + getOrigin() + "," + getDest() + "," + getDate() + "," + getTime() + ") ";
+			return "(" + getOrigin() + "," + getDest() + "," + getDate() + "," + getTime() + ")";
 		return "";
 	}
 

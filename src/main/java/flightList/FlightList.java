@@ -25,24 +25,25 @@ public class FlightList {
 	 * @param filename the name of the file
 	 */
 	public FlightList(String filename) {
-		// FILL IN CODE
-		// Read the file; for each line, create a flight key and a flight data
-		// and call the insert method to insert them into the skip list.
-
+		// Variables
 		FlightKey negInf = new FlightKey(min, min, min, min);
 		FlightKey posInf = new FlightKey(max, max, max, max);
 		head = new FlightNode(negInf, null);
 		tail = new FlightNode(posInf, null);
 		head.setNext(tail);
 		tail.setPrev(head);
-		height = 1;
+		height = 0;
 
+		// Reading into file
 		try (FileReader f = new FileReader(filename)) {
 			BufferedReader br = new BufferedReader(f);
 			String line;
 
+			// While the line in the file isn't empty
 			while ((line = br.readLine()) != null) {
 				String[] arr = line.split(" ");
+
+				// If the element in the file isn't 6 (which is the number of data in the element), then continue
 				if (arr.length != 6) {
 					continue;
 				}
@@ -53,6 +54,7 @@ public class FlightList {
 				String flightNumber = arr[4];
 				double price = Double.parseDouble(arr[5]);
 
+				// Create new flight key and data, and insert them
 				FlightKey key = new FlightKey(origin, dest, date, time);
 				FlightData data = new FlightData(flightNumber, price);
 
@@ -71,19 +73,23 @@ public class FlightList {
 	 * @return true if the key is in the skip list, false otherwise
 	 */
 	public boolean find(FlightKey key) {
-		// FILL IN CODE
 		FlightNode curr = head;
 
+		// While the current node and the node after that isn't null and the current node's key doesn't match the tail's
 		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
 			FlightKey nextKey = curr.getNext().getKey();
 
+			// Return true when the next key matches the given key
 			if (nextKey.compareTo(key) == 0) {
 				return true;
 			}
 
+			// If the next node matches the tail or the next node is greater than the given key, go down
 			if (curr.getNext() == tail || nextKey.compareTo(key) > 0) {
 				curr = curr.getDown();
-			} else if (nextKey.compareTo(key) < 0) {
+			}
+			// If the next node is less than the given key, go right
+			else if (nextKey.compareTo(key) < 0) {
 				curr = curr.getNext();
 			}
 		}
@@ -179,24 +185,30 @@ public class FlightList {
 	 * @return successors of the given key
 	 */
 	public List<FlightNode> successors(FlightKey key) {
+		// Variables
 		List<FlightNode> arr = new ArrayList<>();
 		FlightNode curr = head;
 		int height = this.height;
 
+		// While the current node and the node after that isn't null and the current node's key doesn't match the tail's
 		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
 			FlightKey nextKey = curr.getNext().getKey();
 
+			// If next node is less than given key, go right and continue in the while loop
 			if (nextKey.compareTo(key) < 0) {
 				curr = curr.getNext();
 				continue;
 			}
 
+			// If the next node is greater than the given key and you're not at the bottom level,
+			// go down and continue in the while loop
 			if (nextKey.compareTo(key) > 0 && height != 1) {
 				curr = curr.getDown();
 				height--;
 				continue;
 			}
 
+			// If the next node is equal to the given key, go right and go down until you reach the bottom level
 			if (nextKey.compareTo(key) == 0) {
 				curr = curr.getNext();
 				while (height != 1) {
@@ -206,12 +218,14 @@ public class FlightList {
 				break;
 			}
 
+			// If the next node is greater than the given key, and you're at the bottom level, exit the while loop
 			if (nextKey.compareTo(key) > 0 && height == 1) {
 				break;
 			}
 		}
 
-		while (curr.getNext().getKey().matchSuccessor(key) == true && curr.getNext() != null) {
+		// While the next node's key matches the given key and the next node isn't null, add the next node to the array
+		while (curr.getNext().getKey().matchSuccessor(key) && curr.getNext() != null) {
 			arr.add(curr.getNext());
 			curr = curr.getNext();
 		}
@@ -229,25 +243,31 @@ public class FlightList {
 	 * @return predecessors of the given key
 	 */
 	public List<FlightNode> predecessors(FlightKey key) {
+		// Variables
 		List<FlightNode> arr = new ArrayList<>();
-		ArrayList<FlightNode> temp = new ArrayList<FlightNode>();
+		ArrayList<FlightNode> temp = new ArrayList<>();
 		FlightNode curr = head;
 		int height = this.height;
 
+		// While the current node and the node after that isn't null and the current node's key doesn't match the tail's
 		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
 			FlightKey nextKey = curr.getNext().getKey();
 
+			// If the next key is less than the given key, go right and continue in the while loop
 			if (nextKey.compareTo(key) < 0) {
 				curr = curr.getNext();
 				continue;
 			}
 
+			// If the next node is greater than the given key and you're not at the bottom level,
+			// go down and continue in the while loop
 			if (nextKey.compareTo(key) > 0 && height != 1) {
 				curr = curr.getDown();
 				height--;
 				continue;
 			}
 
+			// If the next node is equal to the given key, go right and go down until you reach the bottom level
 			if (nextKey.compareTo(key) == 0) {
 				curr = curr.getNext();
 				while (height != 1) {
@@ -257,17 +277,21 @@ public class FlightList {
 				break;
 			}
 
+			// If the next key is greater than the given key, and you're at the bottom level, exit the while loop
 			if (nextKey.compareTo(key) > 0 && height == 1) {
 				curr = curr.getNext();
 				break;
 			}
 		}
 
-		while (curr.getPrev().getKey().matchPredecessor(key) == true && curr.getPrev() != null) {
+		// While the next node's key matches the given key and the next node isn't null,
+		// add the next node to the temp array
+		while (curr.getPrev().getKey().matchPredecessor(key) && curr.getPrev() != null) {
 			temp.add(curr.getPrev());
 			curr = curr.getPrev();
 		}
 
+		// Add the elements from the temp array to the array from the end so that it is in order
 		for (int i = temp.size() - 1; i >= 0; i--) {
 			arr.add(temp.get(i));
 		}
@@ -283,18 +307,26 @@ public class FlightList {
 	 * (SFO, JFK, 03/15, 06:30),   (SFO, JFK, 03/15, 7:15), (SFO, JFK, 03/20, 5:00), (SFO, PVD, 03/14, 09:15)
 	 */
 	public String toString() {
-		// FILL IN CODE
 		StringBuilder sb = new StringBuilder();
-		FlightNode node = head;
+		FlightNode curr = head;
+		int levels = height;
 
-		while (node.getDown() != null) {
-			sb.append(node.getKey());
-			if (node.getNext() == null) {
-				sb.append(System.lineSeparator());
-				node = head.getDown();
+		// Loop to reach the bottom level
+		while (levels > 0) {
+			FlightNode node = curr;
+
+			while (curr != null && curr.getNext() != null & curr.getNext().getKey().compareTo(tail.getKey()) != 0) {
+				sb.append(curr.getNext().getKey()); // Print next node's key
+
+				if (curr.getNext().getNext().getKey().compareTo(tail.getKey()) != 0) {
+					sb.append(", "); // Printing the comma
+				}
+				curr = curr.getNext();
 			}
-			sb.append(", ");
-			node = node.getNext();
+			sb.append(System.lineSeparator()); // Newline
+			curr = node;
+			curr = curr.getDown();
+			levels--;
 		}
 
 		return sb.toString();
@@ -307,15 +339,23 @@ public class FlightList {
 	 * @param filename the name of the file
 	 */
 	public void print(String filename) {
-		// FILL IN CODE
+		// Reading into file
 		try (PrintWriter pw = new PrintWriter(filename)) {
 			FlightNode curr = head;
 			int levels = height;
+
+			// Loop to reach the bottom level
 			while (levels > 0) {
 				FlightNode node = curr;
 
+				// While the current node and the node after that isn't null
+				// and the current node's key doesn't match the tail's
 				while (curr != null && curr.getNext() != null & curr.getNext().getKey().compareTo(tail.getKey()) != 0) {
-					pw.print(curr.getNext().getKey() + ", ");
+					pw.print(curr.getNext().getKey()); // Print next node's key
+
+					if (curr.getNext().getNext().getKey().compareTo(tail.getKey()) != 0) {
+						pw.print(", "); // Printing the comma
+					}
 					curr = curr.getNext();
 				}
 				pw.println();
@@ -339,6 +379,7 @@ public class FlightList {
 	 * as the key, and whose departure time is within a given timeframe
 	 */
 	public List<FlightNode> findFlights(FlightKey key, int timeFrame) {
+		// Variables
 		List<FlightNode> resFlights = new ArrayList<>();
 		List<FlightNode> pre = predecessors(key);
 		List<FlightNode> suc = successors(key);
@@ -347,6 +388,7 @@ public class FlightList {
 		int upperTimeFrame = hour + timeFrame;
 		int flightHour;
 
+		// Loop to add the predecessors of the given flight key
 		for (int i = 0; i < pre.size(); i++) {
 			FlightNode currP = pre.get(i);
 			flightHour = hour(currP.getKey().getTime());
@@ -355,10 +397,12 @@ public class FlightList {
 			}
 		}
 
-		if (find(key) == true) {
+		// Add the key if it is in the skip list
+		if (find(key)) {
 			resFlights.add(findFlight(key));
 		}
 
+		// Loop to add the successors of the given flight key
 		for (int j = 0; j < suc.size(); j++) {
 			FlightNode currS = suc.get(j);
 			flightHour = hour(currS.getKey().getTime());
@@ -378,16 +422,22 @@ public class FlightList {
 	private FlightNode findFlight(FlightKey key) {
 		FlightNode curr = head;
 
+		// While the current node and the node after that isn't null
+		// and the current node's key doesn't match the tail's
 		while (curr != null && curr.getNext() != null && curr.getKey().compareTo(tail.getKey()) != 0) {
 			FlightKey nextKey = curr.getNext().getKey();
 
+			// If the next key equals the given key, return the next key
 			if (nextKey.compareTo(key) == 0) {
 				return curr.getNext();
 			}
 
+			// If the next node equals the tail or the next key is greater than the given key, go down
 			if (curr.getNext() == tail || nextKey.compareTo(key) > 0) {
 				curr = curr.getDown();
-			} else if (nextKey.compareTo(key) < 0) {
+			}
+			// If the next key is less than the given key, go right
+			else if (nextKey.compareTo(key) < 0) {
 				curr = curr.getNext();
 			}
 		}
